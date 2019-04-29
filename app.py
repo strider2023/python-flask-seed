@@ -1,8 +1,8 @@
 from flask import Flask
-from services.employee_services import employees_api
+from services.user_services import users_api
 
 app = Flask(__name__)
-app.register_blueprint(employees_api)
+app.register_blueprint(users_api)
 
 @app.route("/health_check")
 def health():

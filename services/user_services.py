@@ -1,22 +1,25 @@
 from flask import Blueprint, jsonify
 from dao.employee import Employee
+from database.user_queries import UserQueries
 
-employees_api = Blueprint('employees_api', __name__)
+users_api = Blueprint('users_api', __name__)
 
-@employees_api.route("/employees", methods=["GET"])
+db = UserQueries()
+
+@users_api.route("/users", methods=["GET"])
 def getEmployee():
-    employees = [];
-    for index in range(3):
-        employee = Employee(index, "Arindam", "Tech")
+    employees = []
+    for x in db.getUsers():
+        employee = Employee(x[0], x[4], x[6])
         employees.append(employee.getEmployee())
-    return jsonify({'employees': employees})
+    return jsonify({'users': employees})
 
-# @employees_api.route('/employee/<empId>',methods=['GET'])
+# @users_api.route('/employee/<empId>',methods=['GET'])
 # def getEmp(empId):
 #     usr = [ emp for emp in empDB if (emp['id'] == empId) ]
 #     return jsonify({'emp':usr})
 #
-# @employees_api.route('/employee/<empId>',methods=['PUT'])
+# @users_api.route('/employee/<empId>',methods=['PUT'])
 # def updateEmp(empId):
 #     em = [ emp for emp in empDB if (emp['id'] == empId) ]
 #     if 'name' in request.json :
@@ -25,7 +28,7 @@ def getEmployee():
 #         em[0]['title'] = request.json['title']
 #     return jsonify({'emp':em[0]})
 #
-# @employees_api.route('/employee/add',methods=['POST'])
+# @users_api.route('/employee/add',methods=['POST'])
 # def createEmp():
 #     dat = {
 #     'id':request.json['id'],
@@ -35,7 +38,7 @@ def getEmployee():
 #     empDB.append(dat)
 #     return jsonify(dat)
 #
-# @employees_api.route('/employee/<empId>',methods=['DELETE'])
+# @users_api.route('/employee/<empId>',methods=['DELETE'])
 # def deleteEmp(empId):
 #     em = [ emp for emp in empDB if (emp['id'] == empId) ]
 #     if len(em) == 0:
