@@ -1,9 +1,11 @@
 import mysql.connector
+import configparser
 
 class AppDB:
 
     __instance = None
-    mydb = None
+    db = None
+    config = configparser.ConfigParser()
 
     @staticmethod
     def getInstance():
@@ -18,14 +20,15 @@ class AppDB:
             raise Exception("This class is a singleton!")
         else:
             AppDB.__instance = self
-        self.mydb = mysql.connector.connect(
-            host='localhost',
-            port='3306',
-            user='upasthiti',
-            passwd='upasthiti321',
-            database='upasthiti-backend',
+        self.config.read('config.ini')
+        self.db = mysql.connector.connect(
+            host=self.config.get('MYSQL', 'host'),
+            port=self.config.get('MYSQL', 'port'),
+            user=self.config.get('MYSQL', 'user'),
+            passwd=self.config.get('MYSQL', 'password'),
+            database=self.config.get('MYSQL', 'database'),
             auth_plugin='mysql_native_password'
         )
 
     def getDatabase(self):
-        return self.mydb
+        return self.db

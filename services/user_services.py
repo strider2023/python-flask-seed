@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from dao.employee import Employee
+from dao.user_dao import UserDao
 from database.user_queries import UserQueries
 
 users_api = Blueprint('users_api', __name__)
@@ -10,7 +10,7 @@ db = UserQueries()
 def getEmployee():
     employees = []
     for x in db.getUsers():
-        employee = Employee(x[0], x[4], x[6])
+        employee = UserDao(x[0], x[4], x[6])
         employees.append(employee.getEmployee())
     return jsonify({'users': employees})
 

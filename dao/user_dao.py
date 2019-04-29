@@ -1,4 +1,4 @@
-class Employee:
+class UserDao:
     'Common base class for all employees'
 
     id = -1
