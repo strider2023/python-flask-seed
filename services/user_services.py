@@ -1,47 +1,33 @@
-from flask import Blueprint, jsonify
-from dao.user_dao import UserDao
+from flask_restplus import Resource, marshal
+from util.swagger_util import api
+from util.auth_util import AuthUtil
 from database.user_queries import UserQueries
+from models.user_models import user_model as userModel
 
-users_api = Blueprint('users_api', __name__)
+ns = api.namespace('user', description='User account services')
 
 db = UserQueries()
+authUtil = AuthUtil()
 
-@users_api.route("/users", methods=["GET"])
-def getEmployee():
-    employees = []
-    for x in db.getUsers():
-        employee = UserDao(x[0], x[4], x[6])
-        employees.append(employee.getEmployee())
-    return jsonify({'users': employees})
+@ns.route("/<int:id>")
+class User(Resource):
 
-# @users_api.route('/employee/<empId>',methods=['GET'])
-# def getEmp(empId):
-#     usr = [ emp for emp in empDB if (emp['id'] == empId) ]
-#     return jsonify({'emp':usr})
-#
-# @users_api.route('/employee/<empId>',methods=['PUT'])
-# def updateEmp(empId):
-#     em = [ emp for emp in empDB if (emp['id'] == empId) ]
-#     if 'name' in request.json :
-#         em[0]['name'] = request.json['name']
-#     if 'title' in request.json:
-#         em[0]['title'] = request.json['title']
-#     return jsonify({'emp':em[0]})
-#
-# @users_api.route('/employee/add',methods=['POST'])
-# def createEmp():
-#     dat = {
-#     'id':request.json['id'],
-#     'name':request.json['name'],
-#     'title':request.json['title']
-#     }
-#     empDB.append(dat)
-#     return jsonify(dat)
-#
-# @users_api.route('/employee/<empId>',methods=['DELETE'])
-# def deleteEmp(empId):
-#     em = [ emp for emp in empDB if (emp['id'] == empId) ]
-#     if len(em) == 0:
-#        abort(404)
-#     empDB.remove(em[0])
-#     return jsonify({'response':'Success'})
+    @ns.marshal_with(userModel)
+    @ns.doc(security='apikey')
+    @ns.doc(responses={200: 'OK', 400: 'Invalid Argument', 403: 'Not Authorized', 500: 'Mapping Key Error'})
+    def get(self, id):
+        try:
+            result = db.getUser(id)
+            response = {
+                'firstname': result[0][4],
+                'lastname': result[0][6],
+                'email': result[0][1],
+                'phone': result[0][2],
+                'token': authUtil.createToken({'id': result[0][0]})
+            }
+            return marshal(response, userModel)
+        except KeyError as e:
+            ns.abort(500, e.__doc__, status="Please check your request body.", statusCode="500")
+        except Exception as e:
+            ns.abort(400, e.__doc__, status="Invalid argument.", statusCode="400")
+

@@ -6,6 +6,7 @@ class AuthUtil:
     config = configparser.ConfigParser()
 
     def __init__(self):
+        self.config.read('config.ini')
         self.key = self.config.get('JWT', 'key')
 
     def createToken(self, input):

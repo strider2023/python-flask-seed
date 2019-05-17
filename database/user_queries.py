@@ -10,6 +10,13 @@ class UserQueries:
         self.dbcursor = self.db.getDatabase().cursor()
 
     def getUsers(self):
-        self.dbcursor.execute("SELECT * FROM user")
+        self.dbcursor.execute("SELECT * FROM `upasthiti-backend`.user")
         myresult = self.dbcursor.fetchall()
+        return myresult
+
+    def getUser(self, id):
+        print("id", id)
+        self.dbcursor.execute("SELECT * FROM `upasthiti-backend`.user WHERE id=" + id)
+        myresult = self.dbcursor.fetchall()
+        print("val", myresult)
         return myresult
