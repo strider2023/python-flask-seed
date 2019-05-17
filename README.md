@@ -11,3 +11,6 @@ $ pip install mysql-connector
 
 Install JWT support:
 $ pip install pyjwt
+
+Install Flask-RESTPlus support:
+$ pip install flask-restplus

@@ -1,12 +1,15 @@
 from flask import Flask
-from services.user_services import users_api
+from util.swagger_util import api
+
+#from services.user_services import users_api
+from services.authentication_services import ns as auth_namespace
+from services.health_check_services import ns as health_check_namespace
 
 app = Flask(__name__)
-app.register_blueprint(users_api)
+api.init_app(app)
 
-@app.route("/health_check")
-def health():
-    return "All Good!"
+api.add_namespace(health_check_namespace)
+api.add_namespace(auth_namespace)
 
 if __name__ == "__main__":
     app.run()
