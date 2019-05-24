@@ -3,8 +3,7 @@ import hashlib
 from flask_restplus import Resource, marshal
 from util.swagger_util import api
 from database.auth_queries import AuthQueries
-from models.login_model import login_model as loginModel
-from models.user_models import user_model as userModel
+from models.login_model import login_model as loginModel, user_model as userModel
 from util.auth_util import AuthUtil
 
 ns = api.namespace('auth', description='Authentication services')
