@@ -1,8 +1,9 @@
+from flask import request
 from flask_restplus import Resource, marshal
 from util.swagger_util import api
 from util.auth_util import AuthUtil
 from database.user_queries import UserQueries
-from models.user_models import user_model as userModel
+from models.user_models import user_model as userModel, upload_image_model as uploadModel
 
 ns = api.namespace('user', description='User account services')
 
@@ -31,6 +32,21 @@ class User(Resource):
         except Exception as e:
             ns.abort(400, e.__doc__, status="Invalid argument.", statusCode="400")
 
+@ns.route("/upload")
+class UploadImage(Resource):
+
+    @api.doc(id='upload', description='Upload file')
+    @api.expect(uploadModel, validate=True)
+    @ns.doc(responses={200: 'OK', 400: 'Invalid Argument', 403: 'Not Authorized', 500: 'Mapping Key Error'})
+    def post(self):
+        try:
+            print("Request", request.form['image_name'])
+            return request.form['image_name']
+        except KeyError as e:
+            ns.abort(500, e.__doc__, status="Please check your request body.", statusCode="500")
+        except Exception as e:
+            ns.abort(400, e.__doc__, status="Invalid argument.", statusCode="400")
+
 @ns.route("/all")
 class UserList(Resource):
 
@@ -50,14 +66,14 @@ class UserList(Resource):
                 }
                 response.append(userResponse)
             print("Response", response)
-            return marshal(response, userModel)
+            return marshal(response, userModel), 200
         except KeyError as e:
             ns.abort(500, e.__doc__, status="Please check your request body.", statusCode="500")
         except Exception as e:
             ns.abort(400, e.__doc__, status="Invalid argument.", statusCode="400")
 
 
-java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate \
-   -i http://petstore.swagger.io/v2/swagger.json \
-   -l java \
-   -o /var/tmp/java_api_client
+# java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate \
+#    -i http://petstore.swagger.io/v2/swagger.json \
+#    -l java \
+#    -o /var/tmp/java_api_client
